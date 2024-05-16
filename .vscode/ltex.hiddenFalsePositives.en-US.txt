@@ -1,0 +1,1 @@
+{"rule":"MASS_AGREEMENT","sentence":"^\\QGoal\nDeploy a machine learning model on a cloud platform.\\E$"}
