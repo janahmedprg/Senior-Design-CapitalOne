@@ -1,10 +1,10 @@
 # Securing Machine Learning Model Deployment with AWS
 
 ## Introduction
-Our senior design project goal was to deploy a machine learning model and ensure its security
+My senior design project goal was to deploy a machine learning model and ensure its security
 against potential attack vectors. With the increasing adoption of machine learning, it is
 crucial to be able to understand how to secure ML models.
-This documentation provides a solution with all the steps to securing the endpoint of our deployed model.
+This documentation provides a solution with all the steps to securing the endpoint of my deployed model.
 
 ## Goal
 - Deploy a machine learning model on a cloud platform.
@@ -13,9 +13,9 @@ This documentation provides a solution with all the steps to securing the endpoi
 ## Background
 
 ### ML Model
-We decided to choose the
+I decided to choose the
 [Credit Card Transactions Fraud Detection Dataset](https://www.kaggle.com/datasets/kartik2112/fraud-detection)
-from Kaggle in order to train our model. The relevant columns for our
+from Kaggle in order to train my model. The relevant columns for my
 model are
 - `'cc_num'`: Credit card number used for the transaction.
 - `'amt'`: Amount of the transaction.
@@ -25,29 +25,29 @@ model are
 - `'merch_long'`: Longitude of the merchant location.
 - `'is_fraud'`: Binary indicator (0 or 1) representing whether the transaction is fraudulent (0 is not fraud, 1 is fraud).
 
-We decided to use a Random Forrest Classifier for our ML model
+I decided to use a Random Forrest Classifier for my ML model
 since it is the most appropriate for this scenario. Each decision tree
 of the random forest is trained on some randomly selected sample. Once
 all the trees are created, the model predicts the class label of
 the input features by majority voting of all the decision trees.
-We varied the values of some parameters of the `sklearn.RandomForestClassifier`and found that to get the best model for our
-dataset we needed to increase the number of decision trees, introduce
+I varied the values of some parameters of the `sklearn.RandomForestClassifier`and found that to get the best model for my
+dataset I needed to increase the number of decision trees, introduce
 randomness when sampling from the dataset, and have the weights of both
-classes (0 and 1) to be balanced. We then varied the number of data
-the model trained on to get the most optimal model. In Figure 1 we can
+classes (0 and 1) to be balanced. I then varied the number of data
+the model trained on to get the most optimal model. In Figure 1 I can
 see the heat maps of the normalized confusion matrix and accuracy
 of each model when trained on different sizes of data. From here
-we can see that the most optimal model is when we train
+I can see that the most optimal model is when I train
 on 100000 rows.
 
 ![Figure 1](img/hmap_col.jpg)
 *Figure 1: Heat map of normalized confusion matrices.*
 
 ### Deployment
-We decided to utilize AWS services since we collaborated with
+I decided to utilize AWS services since I collaborated with
 Capital One, and
 they mostly use AWS for their applications.
-We chose Amazon SageMaker for a few reasons such as
+I chose Amazon SageMaker for a few reasons such as
 - It is fully managed meaning the
 user doesn't have to worry about the operational aspects of
 running a machine learning platform.
@@ -77,41 +77,41 @@ Total Rows are: 555719
    macro avg       0.60      0.77      0.64    555719
 weighted avg       1.00      0.99      0.99    555719
 ```
-Once we deploy our model, then on the **Amazon SageMaker**&#8594;**Training**&#8594;**Training jobs** dashboard
-we can see our completed training job as in Figure 2.
+Once I deploy my model, then on the **Amazon SageMaker**&#8594;**Training**&#8594;**Training jobs** dashboard
+I can see my completed training job as in Figure 2.
 
 ![Figure2](img/trainJob.png)
 *Figure 2: Amazon SageMaker Training jobs dashboard.*
 
-We can also see our deployed model on the **Amazon SageMaker**&#8594;**Inference**&#8594;**Endpoints** dashboard as in Figure 3.
+I can also see my deployed model on the **Amazon SageMaker**&#8594;**Inference**&#8594;**Endpoints** dashboard as in Figure 3.
 
 ![Figure 3](img/enpoint.png)
 *Figure 3: Amazon SageMaker Endpoint dashboard.*
 
 ## Securing the Endpoint Architecture
-To secure our ML endpoint we decided to follow the best practices
+To secure my ML endpoint I decided to follow the best practices
 mentioned in the
 [Security in Amazon API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/security.html)
-developer guide. We built the architecture shown
+developer guide. I built the architecture shown
 in Figure 4. The reasons of having this type of architecture
 is that the endpoint of the ML model can only be accessed
 by an AWS account that has appropriate permissions and by the
 Lambda Function. To allow other users to infer the model
-we add an API Gateway that triggers the API. As a first
-security measure we require the API to have a key. Therefore,
+I add an API Gateway that triggers the API. As a first
+security measure I require the API to have a key. Therefore,
 only users with both the link and the key are allowed to
 infer the model. Having only an API key doesn't prevent
 from DDoS attacks or other kinds of malicious attacks.
-This is why we use AWS Shield to protect our API from some of
+This is why I use AWS Shield to protect my API from some of
 the most common attacks. Features that AWS Shield offer are:
 
 - **Agile protection against web attacks:** AWS WAF rule propagation and updates take just under a minute, enabling for fast reaction when under an attack or when security issues arise. WAF supports hundreds of rules that can inspect any part of the web request with minimal latency impact to incoming traffic.
-- **Improved web traffic visibility:** AWS WAF gives near real-time visibility into our web traffic, which we can use to create new rules or alerts in Amazon CloudWatch. In addition, AWS WAF offers comprehensive logging, allowing us to capture each inspected web request’s full header data for use in security automation, analytics, or auditing.
-- **Save time with managed rules:** With managed Rules for AWS WAF, we can quickly get started and protect our API against common threats. Managed Rules are updated automatically and are available from AWS or AWS Marketplace sellers.
+- **Improved web traffic visibility:** AWS WAF gives near real-time visibility into my web traffic, which I can use to create new rules or alerts in Amazon CloudWatch. In addition, AWS WAF offers comprehensive logging, allowing us to capture each inspected web request’s full header data for use in security automation, analytics, or auditing.
+- **Save time with managed rules:** With managed Rules for AWS WAF, I can quickly get started and protect my API against common threats. Managed Rules are updated automatically and are available from AWS or AWS Marketplace sellers.
 - **Ease of deployment and maintenance:** AWS WAF is easy to deploy and protects application(s) deployed on either Amazon CloudFront, the Application Load Balancer, or Amazon API Gateway. There is no additional software to deploy, DNS configuration, or SSL/TLS certificate to manage.
 
 In [Testing the AWS Shield](#testing-the-aws-shield) section
-we show examples of these features tested later in this document.
+I show examples of these features tested later in this document.
 
 ![Figure 4](img/architecture.png)
 *Figure 4: Endpoint Architecture.*
@@ -122,7 +122,7 @@ Navigate to the AWS Lambda Function dashboard and press **Create function**. To 
 ![Figure 5](img/lambdaCreate.png)
 *Figure 5: Lambda set up.*
 
-Once we create our function we use the following code that infers
+Once I create my function I use the following code that infers
 the model:
 ```python
 import os
@@ -157,9 +157,9 @@ def lambda_handler(event, context):
     }
 ```
 Before deploying, set up the environment variable found under the
-**Configuration** tab. We set the value of `ENDPOINT_NAME` to the name
-of our endpoint found on Amazon SageMaker Endpoint dashboard
-(Figure 3). Our Lambda Function dashboard should look something like
+**Configuration** tab. I set the value of `ENDPOINT_NAME` to the name
+of my endpoint found on Amazon SageMaker Endpoint dashboard
+(Figure 3). My Lambda Function dashboard should look something like
 Figure 6.
 
 ![Figure 6](img/LambdaDash.png)
@@ -173,13 +173,13 @@ the **REST API** and then fill out the required boxes (Figure 7).
 ![Figure 7](img/API.png)
 *Figure 7: API Gateway set up.*
 
-Once we create our API, we create a **POST** method to the appropriate
+Once I create my API, I create a **POST** method to the appropriate
 Lambda function with a **required key**(Figure 8).
 
 ![Figure 8](img/POST.png)
 *Figure 8: POST method set up.*
 
-Once we are done with this setup our dashboard should look
+Once I are done with this setup my dashboard should look
 something like Figure 9.
 
 ![Figure 9](img/dashboardAPI.png)
@@ -191,15 +191,15 @@ To create an API key navigate to the API keys tab and press **Create API key**
 ![Figure 10](img/apikey.png)
 *Figure 10: API key set up.*
 
-To associate the API key with the API we must create an API Usage
-plan. We do that by pressing **Create usage plan** under the
+To associate the API key with the API I must create an API Usage
+plan. I do that by pressing **Create usage plan** under the
 **Usage plan** tab, then fill out the following boxes as in Figure 11.
 
 ![Figure 11](img/usageplan.png)
 *Figure 11: Usage plan set up.*
 
 Once setting up the usage plan, on the **Usage plans** dashboard
-we must associate the API stage with the API key as in Figure 12.
+I must associate the API stage with the API key as in Figure 12.
 
 ![Figure 12](img/stages.png)
 *Figure 12: Associating API stage with API key.*
@@ -208,7 +208,7 @@ we must associate the API stage with the API key as in Figure 12.
 To create an AWS Shield navigate to the **AWS WAF & Shield** dashboard and under **Web ACLs** press **Create web ACL**.
 
 ## Testing the AWS Shield
-To test the AWS Shield we created the following script:
+To test the AWS Shield I created the following script:
 ```python
 for i in range(100):
     headers = {
@@ -255,7 +255,7 @@ Using correct API key
 Request failed with status code: 403
 ```
 
-When we allow traffic for the `CategoryHttpLibrary` we will get the following
+When I allow traffic for the `CategoryHttpLibrary` I will get the following
 output:
 ```
 95
