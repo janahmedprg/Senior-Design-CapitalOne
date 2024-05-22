@@ -205,10 +205,39 @@ I must associate the API stage with the API key as in Figure 12.
 *Figure 12: Associating API stage with API key.*
 
 ### Creating an AWS Shield
-To create an AWS Shield navigate to the **AWS WAF & Shield** dashboard and under **Web ACLs** press **Create web ACL**.
+To create an AWS Shield navigate to the **AWS WAF & Shield** dashboard and under **Web ACLs** press **Create web ACL**. You will have to fill in the
+name and add the resource you want to secure (Figure 13).
+
+![Figure 13](img/acl1.png)
+*Figure 13: ACL set up.*
+
+There are a variety of rules that one can choose from some examples include
+- **Account creation fraud prevention:** Provides protection against the creation of fraudulent accounts on your site.
+- **Account takeover prevention:** Provides protection for your login page against stolen credentials, credential stuffing attacks, brute force login attempts, and other anomalous login activities.
+- **Bot Control:** Provides protection against automated bots that can consume excess resources, skew business metrics, cause downtime, or perform malicious activities.
+- **Admin protection:** Contains rules that allow you to block external access to exposed admin pages.
+- **Amazon IP reputation list:** This group contains rules that are based on Amazon threat intelligence. This is useful if you would like to block sources associated with bots or other threats.
+- **Anonymous IP list:** This group contains rules that allow you to block requests from services that allow obfuscation of viewer identity.
+- **Linux operating system:** Contains rules that block request patterns associated with exploitation of vulnerabilities specific to Linux, including LFI attacks.
+
+There are many more rules, but I just list few ones that 
+are the most appropriate in this case.
+I decided I would test out the Bot Control rule. To add you rules follow
+the steps in Figure 14.
+
+![Figure 14](img/acl2.png)
+*Figure 14: ACL set up.*
 
 ## Testing the AWS Shield
-To test the AWS Shield I created the following script:
+Say that I was a bad actor, and I was trying to infer the model using
+the API and I only know the API but not the API key. One way
+of trying to figure out the API key is to just generate some
+random strings and keep calling the API with the randomly generated
+key. Of course in practice this would be hard to search for
+since the search space of keys is very large. But say the
+bad actor has only part of the key then this simulation
+would still be a good way of testing this attack. The following
+python script simulates the described attack.
 ```python
 for i in range(100):
     headers = {
@@ -236,8 +265,45 @@ else:
     print("Request failed with status code:", response.status_code)
 ```
 
-The resulting output:
+When the shield is not configured or when we allow traffic for the
+`CategoryHttpLibrary` then our bad actor will be able to infer on
+the model once the person gets the correct API key. As seen
+in the output bellow the last line shows that the bad actor
+can infer the model once he finds the correct API key.
 ```
+.
+.
+.
+95
+{'x-api-key': 'V4NwtjdNxOhN5FhMN2HpMedBkV2Ro67qe4lDn3m7'}
+Request failed with status code: 403
+96
+{'x-api-key': 'ifSxI5g658IHkbIQfTVgDUiot0Z4aEDixqefQw5z'}
+Request failed with status code: 403
+97
+{'x-api-key': 'GpAbh6vVE96CIGLolvHzrmsg7jYp2yfZDrtSbuM2'}
+Request failed with status code: 403
+98
+{'x-api-key': 'JKo8k89EQY4eg1Qm0IXuSihZPhKg4s774m5g5xkl'}
+Request failed with status code: 403
+99
+Using correct API key
+API Response: {'statusCode': 200, 'body': [0]}
+```
+
+When using the shield with the **Bot Control** rule and
+blocking `CategoryHttpLibrary` traffic within the rule,
+the shield will detect that it is a bot using the API
+and will block the access. Therefore, even if the bad
+actor finds the correct API key they wouldn't be able
+to infer the model. This can be seen in the following
+output. The last line is when the bad actor
+does in fact use the correct API key but is still
+not able to infer the model.
+```
+.
+.
+.
 95
 {'x-api-key': 'HDXHkDt5wG6bV2nDEvXZ6Bk2eLUQdk3C9oRq3San'}
 Request failed with status code: 403
@@ -255,27 +321,29 @@ Using correct API key
 Request failed with status code: 403
 ```
 
-When I allow traffic for the `CategoryHttpLibrary` I will get the following
-output:
-```
-95
-{'x-api-key': 'V4NwtjdNxOhN5FhMN2HpMedBkV2Ro67qe4lDn3m7'}
-Request failed with status code: 403
-96
-{'x-api-key': 'ifSxI5g658IHkbIQfTVgDUiot0Z4aEDixqefQw5z'}
-Request failed with status code: 403
-97
-{'x-api-key': 'GpAbh6vVE96CIGLolvHzrmsg7jYp2yfZDrtSbuM2'}
-Request failed with status code: 403
-98
-{'x-api-key': 'JKo8k89EQY4eg1Qm0IXuSihZPhKg4s774m5g5xkl'}
-Request failed with status code: 403
-99
-Using correct API key
-API Response: {'statusCode': 200, 'body': [0]}
-```
-![shield](img/shield.png)
-![shield 1](img/shield1.png)
-![shield 2](img/shield2.png)
+Another benefit of having AWS Shield is that we can 
+view the incomming traffic and potentially monitor
+threats. See Figures 15 to 18 to see the dashboard of AWS Shield
+with all the monitored metrics.  
+![Figure 15](img/shield.png)
+*Figure 15: AWS Shield dashboard.*
+![Figure 16](img/shield2.png)
+*Figure 16: AWS Shield dashboard.*
+![Figure 17](img/shield1.png)
+*Figure 17: AWS Shield dashboard.*
+![Figure 18](img/shield3.png)
+*Figure 18: AWS Shield dashboard.*
+
 
 ## Conclusions
+From this project I learned how to train and deploy a Random Forest
+Classifier in AWS. I learned about how to design an architecture
+to best secure the endpoint. I learned all the different
+services used in this project namely, AWS Sagemaker, Amazon Lambda,
+Amazon API Gateway and AWS Shield. I learned about all the different rules
+AWS Shield has to offer. In the future I would focus on testing
+and modifying different rules to allow for a better security.
+Some rules that I can potentially look into include the ones
+listed above in section [Creating an AWS Shield](#creating-an-aws-shield).
+I would also like to potentially test out all the categories under
+the Bot Control rule.
