@@ -1,4 +1,4 @@
-# Deplyoing and Securing a Machine Learning Model with AWS
+# Deploying and Securing a Machine Learning Model with AWS
 
 ## Introduction
 My senior design project goal was to deploy a machine learning model and ensure its security
